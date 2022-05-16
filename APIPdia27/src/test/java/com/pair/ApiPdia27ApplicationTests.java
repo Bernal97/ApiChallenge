@@ -1,6 +1,12 @@
 package com.pair;
 
 import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -20,34 +26,37 @@ import com.pair.services.ProductoService;
 @SpringBootTest
 class ApiPdia27ApplicationTests {
 	
-	
+	@InjectMocks
+	private ProductoService service;
 	
 	@Mock
-	private ProductoService servicio;
+	private IProductoRepository mock;
 	
 	private Producto prod1 = new Producto(1, "jabon", 3);
 	private Producto prod2 = new Producto(2, "Aceite", 5);
 	
 	@Test
-	void testearConstruccion() {
-		when(servicio.findById(1)).thenReturn(prod1);
-		if(servicio.save(prod1)) {
-			System.out.println("Carga Exitosa");
-		}else {
-			System.out.println("Carga Fallida");
-		}
-		
+	void testearSeleccion() {
+		when(mock.findAll()).thenReturn(new ArrayList<Producto>());
+		List<Producto> producto = service.findAll();
+		assertNotNull(producto);
+	}
+	
+	@Test
+	void testearGuardado() {
+		when(mock.existsById(prod1.getCodigoProducto())).thenReturn(false);
+		when(mock.save(prod1)).thenReturn(prod1);
+		boolean resultado = service.save(prod1);
+		assertTrue(resultado);
 	}
 	
 	
+	
 	@Test
-	void testearUpdate() {
-		when(servicio.findById(1)).thenReturn(prod1);
-		if(servicio.updateProducto(prod1)) {
-			System.out.println("Updateo Exitoso");
-		}else {
-			System.out.println("Updateo Fallido");
-		}
+	void testearDeleteo() {
+		when(mock.existsById(prod1.getCodigoProducto())).thenReturn(true);
+		boolean resultado = service.deleteById(prod1.getCodigoProducto());
+		assertTrue(resultado);
 	}
 	
 	@Test
